@@ -27,7 +27,7 @@ const LoginScreen = ({ navigation }) => {
 
         {/* TITLE */}
         <Text style={styles.titleTop}>Welcome to</Text>
-        <Text style={styles.titleBottom}>Royale Society</Text>
+        <Text style={styles.titleBottom}>Xihawks Tech Shop</Text>
 
         {/* EMAIL FIELD */}
         <View style={styles.inputWrapper}>

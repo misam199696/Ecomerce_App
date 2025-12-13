@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 
 const SplashScreen = ({ navigation }) => {
   useEffect(() => {
@@ -13,11 +13,9 @@ const SplashScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Image 
-        source={require('../assets/icons/splash.png')} 
-        style={styles.image}
-        resizeMode="contain"
-      />
+      <View style={styles.line} />
+      <Text style={styles.welcomeText}>Xihawks</Text>
+      <Text style={styles.titleText}>Tech Shop</Text>
     </View>
   );
 };
@@ -29,9 +27,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#000000',
   },
-  image: {
-    width: '80%',
-    height: '40%',
+  line: {
+    width: 40,
+    height: 1,
+    backgroundColor: '#FFFFFF',
+    marginBottom: 20,
+  },
+  welcomeText: {
+    fontSize: 24,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontFamily: 'serif',
+    marginBottom: 8,
+  },
+  titleText: {
+    fontSize: 24,
+    color: '#FFFFFF',
+    textAlign: 'center',
+    fontFamily: 'serif',
+    fontWeight: 'bold',
   },
 });
 

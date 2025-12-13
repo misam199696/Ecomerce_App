@@ -7,20 +7,20 @@ const { width, height } = Dimensions.get('window');
 const slides = [
   {
     id: 1,
-    title: 'Welcome to 1Royale',
-    description: '1Royale brings you elite nightlife, events, and concierge services—all in one app.',
+    title: 'Welcome to Xihawks Tech Shop',
+    description: 'Your one-stop destination for premium laptops and tech accessories. Find the perfect device that matches your needs and budget.',
     image: require('../assets/icons/guide1.png')
   },
   {
     id: 2,
-    title: 'Custom Experiences, Just for You',
-    description: 'From bachelorettes to yacht cruises, choose your vibe—1Royale handles the rest.',
+    title: 'Find Your Perfect Laptop',
+    description: 'From powerful gaming rigs to sleek ultrabooks, we offer a wide range of laptops for every purpose and lifestyle.',
     image: require('../assets/icons/guide2.png')
   },
   {
     id: 3,
-    title: 'Book with Confidence',
-    description: 'Browse, book, and manage events with 24/7 support from our expert team.',
+    title: 'Expert Support & Warranty',
+    description: 'Get 24/7 expert support and comprehensive warranty on all our products. Your satisfaction is our top priority.',
     image: require('../assets/icons/guide3.png')
   }
 ];
