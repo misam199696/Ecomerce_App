@@ -20,14 +20,11 @@ const CartScreen = ({ navigation }) => {
       return;
     }
     
-    setIsCheckingOut(true);
-    // Navigate to checkout screen with cart total
-    navigation.navigate('Checkout', { cartTotal });
-    setTimeout(() => {
-      clearCart();
-      setIsCheckingOut(false);
-      navigation.navigate('OrderConfirmation');
-    }, 1500);
+    // Navigate to checkout screen with cart items and total
+    navigation.navigate('Checkout', { 
+      cartItems: [...cart],
+      cartTotal 
+    });
   };
 
   if (cart.length === 0) {

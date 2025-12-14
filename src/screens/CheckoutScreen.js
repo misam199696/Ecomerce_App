@@ -40,7 +40,8 @@ const CheckoutScreen = ({ navigation, route }) => {
       navigation.navigate('OrderConfirmation', { 
         address,
         paymentMethod,
-        orderTotal: cartTotal 
+        orderTotal: cartTotal,
+        cartItems: route.params?.cartItems || []
       });
     }
   };

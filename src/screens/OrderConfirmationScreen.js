@@ -1,9 +1,32 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, SafeAreaView, StatusBar, ScrollView } from 'react-native';
 import { CommonActions } from '@react-navigation/native';
+import { useCart } from '../context/CartContext';
+import { useOrders } from '../context/OrdersContext';
 
 const OrderConfirmationScreen = ({ route, navigation }) => {
-  const { address, paymentMethod, orderTotal } = route.params || {};
+  const { address, paymentMethod, orderTotal, cartItems } = route.params || {};
+  const { clearCart } = useCart();
+  const { addOrder } = useOrders();
+  
+  // Process order when component mounts
+  useEffect(() => {
+    if (cartItems && cartItems.length > 0) {
+      // Add order to orders history
+      addOrder({
+        items: cartItems,
+        total: orderTotal,
+        address,
+        paymentMethod,
+        orderNumber,
+        status: 'Processing',
+        orderDate: new Date().toISOString()
+      });
+      
+      // Clear the cart
+      clearCart();
+    }
+  }, []);
   
   // Generate order number
   const orderNumber = '#' + Math.random().toString(36).substr(2, 9).toUpperCase();
@@ -73,7 +96,7 @@ const OrderConfirmationScreen = ({ route, navigation }) => {
             navigation.dispatch(
               CommonActions.reset({
                 index: 0,
-                routes: [{ name: 'Main' }],
+                routes: [{ name: 'MainTabs' }],
               })
             );
           }}
