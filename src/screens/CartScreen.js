@@ -15,21 +15,18 @@ const CartScreen = ({ navigation }) => {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
 
   const handlePlaceOrder = () => {
+    if (cart.length === 0) {
+      Alert.alert('Empty Cart', 'Your cart is empty. Add some products before placing an order.');
+      return;
+    }
+    
     setIsCheckingOut(true);
-    // Simulate API call for order placement
+    // Navigate to checkout screen with cart total
+    navigation.navigate('Checkout', { cartTotal });
     setTimeout(() => {
       clearCart();
       setIsCheckingOut(false);
-      Alert.alert(
-        'Order Placed!',
-        'Your order has been placed successfully!',
-        [
-          { 
-            text: 'OK', 
-            onPress: () => navigation.navigate('Home')
-          }
-        ]
-      );
+      navigation.navigate('OrderConfirmation');
     }, 1500);
   };
 
@@ -37,12 +34,7 @@ const CartScreen = ({ navigation }) => {
     return (
       <View style={styles.emptyContainer}>
         <Text style={styles.emptyText}>Your cart is empty</Text>
-        <TouchableOpacity 
-          style={styles.continueShoppingButton}
-          onPress={() => navigation.navigate('Home')}
-        >
-          <Text style={styles.continueShoppingText}>Continue Shopping</Text>
-        </TouchableOpacity>
+        
       </View>
     );
   }
