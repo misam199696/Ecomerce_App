@@ -1,440 +1,521 @@
-import React, { useState, useRef } from 'react';
-import { 
-  View, 
-  Text, 
-  StyleSheet, 
-  Image, 
-  ScrollView, 
-  FlatList, 
-  SafeAreaView,
-  StatusBar,
+import React, { useEffect, useRef, useState } from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  FlatList,
+  TouchableOpacity,
+  TextInput,
   Dimensions,
-  Animated
+  ActivityIndicator,
+  SafeAreaView,
 } from 'react-native';
 
 const { width } = Dimensions.get('window');
-const CARD_WIDTH = width - 32; // Screen width minus padding
+const BANNER_WIDTH = width;
 
-// --- Mock Data ---
+/* =======================
+   SAMPLE DATA
+======================= */
 
-const HERO_BANNERS = [
-  { 
-    id: '1', 
-    title: 'Your Luxury Night Starts Here', 
-    img: require('../assets/icons/guide1.png') 
-  },
-  { 
-    id: '2', 
-    title: 'Exclusive VIP Experiences', 
-    img: require('../assets/icons/guide2.png') 
-  },
-  { 
-    id: '3', 
-    title: 'Unforgettable Memories', 
-    img: require('../assets/icons/guide3.png') 
-  },
+const BANNERS = [
+  { id: '1', image: require('../assets/icons/guide1.png') },
+  { id: '2', image: require('../assets/icons/guide2.png') },
+  { id: '3', image: require('../assets/icons/guide3.png') },
 ];
 
-const SERVICES = [
-  { id: '1', title: 'Birthday Queens', sub: 'Birthday Celebration', img: require('../assets/icons/guide1.png')  },
-  { id: '2', title: 'Bachelor Party', sub: 'Party Celebration', img: require('../assets/icons/guide2.png') },
-  { id: '3', title: 'Girls Trip', sub: 'Birthday Celebration', img: require('../assets/icons/guide3.png') },
+
+const CATEGORIES = [
+  'All',
+  'Laptops',
+  'Gaming',
+  'Accessories',
+  'Audio',
+  'Storage',
 ];
 
-const EXPERIENCES = [
-  { id: '1', title: 'Birthday Party', loc: 'Las Vegas', img: require('../assets/icons/guide1.png') },
-  { id: '2', title: 'Bachelor Party', loc: 'Chicago', img: require('../assets/icons/guide2.png') },
-  { id: '3', title: 'Mixed Group', loc: 'New York', img: require('../assets/icons/guide3.png') },
+const PRODUCTS = [
+  {
+    id: '1',
+    name: 'MacBook Pro M2 14-inch',
+    category: 'Laptops',
+    price: 2499,
+    rating: 4.8,
+    image: require('../assets/icons/guide1.png'),
+  },
+  {
+    id: '2',
+    name: 'Gaming Mechanical Keyboard RGB',
+    category: 'Gaming',
+    price: 179,
+    rating: 4.5,
+    image: require('../assets/icons/guide1.png'),
+  },
+  {
+    id: '3',
+    name: 'Sony WH-1000XM5 Headphones',
+    category: 'Audio',
+    price: 399,
+    rating: 4.9,
+    image: require('../assets/icons/guide1.png'),
+  },
+  {
+    id: '4',
+    name: 'Logitech MX Master 3 Mouse',
+    category: 'Accessories',
+    price: 129,
+    rating: 4.7,
+    image: require('../assets/icons/guide1.png'),
+  },
+  {
+    id: '5',
+    name: 'Samsung 2TB Portable SSD',
+    category: 'Storage',
+    price: 299,
+    rating: 4.6,
+    image: require('../assets/icons/guide1.png'),
+  },
+  {
+    id: '6',
+    name: 'ASUS ROG Gaming Laptop',
+    category: 'Gaming',
+    price: 1899,
+    rating: 4.4,
+    image: require('../assets/icons/guide1.png'),
+  },
+  {
+    id: '7',
+    name: 'USB-C Hub Multiport Adapter',
+    category: 'Accessories',
+    price: 89,
+    rating: 4.3,
+    image: require('../assets/icons/guide1.png'),
+  },
+  {
+    id: '8',
+    name: 'AirPods Pro 2nd Gen',
+    category: 'Audio',
+    price: 249,
+    rating: 4.8,
+    image: require('../assets/icons/guide1.png'),
+  },
 ];
 
 const PARTNERS = [
-  { id: '1', img: require('../assets/icons/services.png') }, 
-  { id: '2', img: require('../assets/icons/services.png') },
-  { id: '3', img: require('../assets/icons/services.png') },
+  require('../assets/icons/guide1.png'),
+  require('../assets/icons/guide2.png'),
+  require('../assets/icons/guide3.png'),
 ];
 
 const TESTIMONIALS = [
-  { 
-    id: '1', 
-    text: "We came to Miami for a girls trip with no plan... after getting in contact with Leon and his team we were set with a full itinerary!",
-    name: 'Katya K', 
-    detail: 'Birthday Party, Las Vegas',
-    avatar: require('../assets/icons/guide1.png')
+  {
+    id: '1',
+    name: 'Alex Johnson',
+    text: 'Amazing quality products and super fast delivery.',
+    date: 'Aug 2025',
+    avatar: require('../assets/icons/guide1.png'),
   },
-  { 
-    id: '2', 
-    text: "Absolutely the best service imaginable. The yacht was pristine and the staff was incredibly attentive.",
-    name: 'Sarah M', 
-    detail: 'Bachelorette, Miami',
-    avatar: require('../assets/icons/guide1.png')
+  {
+    id: '2',
+    name: 'Emily Carter',
+    text: 'Customer support was very helpful. Highly recommended!',
+    date: 'Jul 2025',
+    avatar: require('../assets/icons/guide1.png'),
+  },
+  {
+    id: '3',
+    name: 'Michael Lee',
+    text: 'Best tech store I’ve used so far.',
+    date: 'Jun 2025',
+    avatar: require('../assets/icons/guide1.png'),
   },
 ];
 
-// --- Components ---
+/* =======================
+   MAIN COMPONENT
+======================= */
 
-const SectionHeader = ({ title }) => (
-  <View style={styles.sectionHeader}>
-    <Text style={styles.sectionTitle}>{title}</Text>
-    <Image 
-      source={{ uri: 'https://img.icons8.com/ios-glyphs/30/ffffff/chevron-right.png' }} 
-      style={styles.arrowIcon} 
-    />
-  </View>
-);
+const HomeScreen = ({ navigation }) => {
+  const bannerRef = useRef(null);
 
-const Home = ({ navigation }) => {
-  // State for the slider
-  const [activeBannerIndex, setActiveBannerIndex] = useState(0);
+  const [activeBanner, setActiveBanner] = useState(0);
+  const [selectedCategory, setSelectedCategory] = useState('All');
+  const [search, setSearch] = useState('');
+  const [cartCount, setCartCount] = useState(0);
+  const [loading, setLoading] = useState(true);
 
-  // Logic to calculate which slide is active
-  const handleScroll = (event) => {
-    const scrollPosition = event.nativeEvent.contentOffset.x;
-    const index = Math.round(scrollPosition / CARD_WIDTH);
-    setActiveBannerIndex(index);
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  const filteredProducts = PRODUCTS.filter(item => {
+    const matchesCategory =
+      selectedCategory === 'All' || item.category === selectedCategory;
+    const matchesSearch = item.name
+      .toLowerCase()
+      .includes(search.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
+
+  if (loading) {
+    return (
+      <View style={styles.loader}>
+        <ActivityIndicator size="large" color="#E7B866" />
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#121212" />
-      
-      {/* Top Header Label */}
-      <View style={styles.topLabelContainer}>
-        <Text style={styles.topLabel}>Home</Text>
+      {/* HEADER */}
+      <View style={styles.header}>
+        <Image
+          source={require('../assets/icons/guide1.png')}
+          style={styles.logo}
+        />
+
+        <TextInput
+          placeholder="Search products..."
+          placeholderTextColor="#999"
+          style={styles.searchInput}
+          value={search}
+          onChangeText={setSearch}
+        />
+
+        <TouchableOpacity style={styles.cartBtn}>
+          <Image
+            source={require('../assets/icons/guide1.png')}
+            style={styles.cartIcon}
+          />
+          {cartCount > 0 && (
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>{cartCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        
-        {/* Navigation Bar */}
-        <View style={styles.navBar}>
-          <View>
-            <Image 
-                 source={require('../assets/icons/splash.png')} 
-                 style={styles.image}
-                 resizeMode="contain"
-               />
-          </View>
-          
-          <View style={styles.iconRow}>
-            {/* These are still URLs, so we keep { uri: ... } here */}
-            <Image source={{ uri: 'https://img.icons8.com/ios/50/e5c265/search--v1.png' }} style={styles.navIcon} />
-            <Image source={{ uri: 'https://img.icons8.com/ios/50/e5c265/appointment-reminders.png' }} style={styles.navIcon} />
-            <Image source={{ uri: 'https://img.icons8.com/ios/50/e5c265/user--v1.png' }} style={styles.navIcon} />
-          </View>
-        </View>
+      <FlatList
+        ListHeaderComponent={
+          <>
+            {/* HERO CAROUSEL */}
+            <FlatList
+              ref={bannerRef}
+              data={BANNERS}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={item => item.id}
+              onMomentumScrollEnd={e =>
+                setActiveBanner(
+                  Math.round(e.nativeEvent.contentOffset.x / BANNER_WIDTH)
+                )
+              }
+              renderItem={({ item }) => (
+                <Image source={item.image} style={styles.banner} />
+              )}
+            />
 
-        {/* --- HERO SLIDER SECTION START --- */}
-        <View style={styles.heroWrapper}>
-          <FlatList
-            data={HERO_BANNERS}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            keyExtractor={(item) => item.id}
-            onScroll={handleScroll}
-            scrollEventThrottle={16} 
-            renderItem={({ item }) => (
-              <View style={styles.heroContainer}>
-                {/* FIXED: Removed {uri: ...} */}
-                <Image 
-                  source={item.img} 
-                  style={styles.heroImage} 
-                  resizeMode="cover"
+            {/* DOTS */}
+            <View style={styles.dotsRow}>
+              {BANNERS.map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.dot,
+                    activeBanner === i && styles.activeDot,
+                  ]}
                 />
-                <View style={styles.heroOverlay}>
-                  <Text style={styles.heroText}>{item.title}</Text>
+              ))}
+            </View>
+
+            {/* CATEGORIES */}
+            <FlatList
+              data={CATEGORIES}
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              keyExtractor={item => item}
+              style={styles.categoryList}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  onPress={() => setSelectedCategory(item)}
+                  style={[
+                    styles.categoryChip,
+                    selectedCategory === item &&
+                      styles.categoryChipActive,
+                  ]}
+                >
+                  <Text
+                    style={[
+                      styles.categoryText,
+                      selectedCategory === item &&
+                        styles.categoryTextActive,
+                    ]}
+                  >
+                    {item}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            />
+          </>
+        }
+        data={filteredProducts}
+        numColumns={2}
+        keyExtractor={item => item.id}
+        columnWrapperStyle={styles.productRow}
+        contentContainerStyle={{ paddingBottom: 20 }}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.productCard}
+            onPress={() =>
+              navigation.navigate('ProductDetails', { product: item })
+            }
+          >
+            <Image source={item.image} style={styles.productImage} />
+
+            <Text style={styles.productCategory}>{item.category}</Text>
+
+            <Text style={styles.productName} numberOfLines={2}>
+              {item.name}
+            </Text>
+
+            <Text style={styles.rating}>⭐ {item.rating}</Text>
+
+            <View style={styles.priceRow}>
+              <Text style={styles.price}>${item.price}</Text>
+              <TouchableOpacity
+                onPress={() => setCartCount(prev => prev + 1)}
+              >
+                <Text style={styles.addBtn}>＋</Text>
+              </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
+  )}
+        ListEmptyComponent={
+          <Text style={styles.emptyText}>No products found</Text>
+        }
+        ListFooterComponent={
+          <>
+            {/* PARTNERS */}
+            <Text style={styles.sectionTitle}>Our Partners</Text>
+            <FlatList
+              data={PARTNERS}
+              horizontal
+              keyExtractor={(_, i) => i.toString()}
+              renderItem={({ item }) => (
+                <Image source={item} style={styles.partnerLogo} />
+              )}
+            />
+
+            {/* TESTIMONIALS */}
+            <Text style={styles.sectionTitle}>Testimonials</Text>
+            <FlatList
+              data={TESTIMONIALS}
+              horizontal
+              keyExtractor={item => item.id}
+              renderItem={({ item }) => (
+                <View style={styles.testimonialCard}>
+                  <Text style={styles.rating}>⭐⭐⭐⭐⭐</Text>
+                  <Text style={styles.testimonialText}>
+                    {item.text}
+                  </Text>
+                  <View style={styles.userRow}>
+                    <Image
+                      source={item.avatar}
+                      style={styles.avatar}
+                    />
+                    <View>
+                      <Text style={styles.userName}>
+                        {item.name}
+                      </Text>
+                      <Text style={styles.date}>
+                        {item.date}
+                      </Text>
+                    </View>
+                  </View>
                 </View>
-              </View>
-            )}
-          />
-
-          {/* Dynamic Pagination Dots */}
-          <View style={styles.paginationRow}>
-            {HERO_BANNERS.map((_, index) => (
-              <View 
-                key={index} 
-                style={[
-                  styles.dot, 
-                  activeBannerIndex === index ? styles.activeDot : null
-                ]} 
-              />
-            ))}
-          </View>
-        </View>
-        {/* --- HERO SLIDER SECTION END --- */}
-
-        {/* Section 1: Our Services */}
-        <SectionHeader title="Our Services" />
-        <FlatList
-          horizontal
-          data={SERVICES}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) => (
-            <View style={styles.cardContainer}>
-              {/* FIXED: Removed {uri: ...} */}
-              <Image source={item.img} style={styles.serviceImage} />
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardSub}>{item.sub}</Text>
-            </View>
-          )}
-        />
-
-        {/* Section 2: Our Experiences */}
-        <SectionHeader title="Our Experiences" />
-        <FlatList
-          horizontal
-          data={EXPERIENCES}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) => (
-            <View style={styles.experienceCardContainer}>
-              {/* FIXED: Removed {uri: ...} */}
-              <Image source={item.img} style={styles.experienceImage} />
-              <Text style={styles.cardTitle}>{item.title}</Text>
-              <Text style={styles.cardSub}>{item.loc}</Text>
-            </View>
-          )}
-        />
-
-        {/* Section 3: Partners/Services Logos */}
-        <SectionHeader title="Our Services" />
-        <FlatList
-          horizontal
-          data={PARTNERS}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) => (
-           
-              <Image 
-                source={item.img} 
-                style={styles.partnerLogo} 
-                resizeMode="contain" 
-              />
-            // </View>
-          )}
-        />
-
-        {/* Section 4: Testimonials */}
-        <SectionHeader title="Testimonials" />
-        <FlatList
-          horizontal
-          data={TESTIMONIALS}
-          keyExtractor={(item) => item.id}
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
-          renderItem={({ item }) => (
-            <View style={styles.testimonialCard}>
-              <Text style={styles.testimonialText} numberOfLines={6}>
-                "{item.text}"
-              </Text>
-              <View style={styles.testimonialUserRow}>
-                {/* FIXED: Removed {uri: ...} */}
-                <Image source={item.avatar} style={styles.avatar} />
-                <View>
-                  <Text style={styles.userName}>{item.name}</Text>
-                  <Text style={styles.userDetail}>{item.detail}</Text>
-                </View>
-              </View>
-            </View>
-          )}
-        />
-
-        <View style={{ height: 50 }} />
-      </ScrollView>
+              )}
+            />
+          </>
+        }
+      />
     </SafeAreaView>
   );
 };
+
+export default HomeScreen;
+
+/* =======================
+   STYLES
+======================= */
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#0F0F0F',
   },
-  topLabelContainer: {
-    paddingHorizontal: 16,
-    paddingTop: 10,
-    paddingBottom: 5,
-  },
-  topLabel: {
-    color: '#888',
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  navBar: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  loader: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 10,
   },
-   image: {
-    width: 150,
-    height: 30,
-  },
-  logoText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
-    letterSpacing: 1,
-  },
-  logoSubText: {
-    color: '#888',
-    fontSize: 8,
-  },
-  iconRow: {
+  header: {
     flexDirection: 'row',
-  },
-  navIcon: {
-    width: 22,
-    height: 22,
-    marginLeft: 15,
-    tintColor: '#CFB53B', 
-  },
-  
-  // --- HERO SLIDER STYLES ---
-  heroWrapper: {
     alignItems: 'center',
-    marginTop: 15,
-    marginBottom: 10,
+    padding: 16,
   },
-  heroContainer: {
-    width: CARD_WIDTH, // Fixed width for paging
-    height: 200,
-    marginHorizontal: 16, // Center the card visually within paging logic
-    overflow: 'hidden',
+  logo: {
+    width: 40,
+    height: 40,
+    resizeMode: 'contain',
   },
-  heroImage: {
-    width: '100%',
-    height: '100%',
-    borderRadius: 16,
+  searchInput: {
+    flex: 1,
+    marginHorizontal: 12,
+    backgroundColor: '#1E1E1E',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    color: '#FFF',
+    height: 40,
   },
-  heroOverlay: {
+  cartBtn: {
+    position: 'relative',
+  },
+  cartIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#FFF',
+  },
+  cartBadge: {
     position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 20,
-    backgroundColor: 'rgba(0,0,0,0.3)' 
+    top: -6,
+    right: -6,
+    backgroundColor: '#E7B866',
+    borderRadius: 10,
+    paddingHorizontal: 6,
   },
-  heroText: {
-    color: 'white',
-    fontSize: 20,
+  cartBadgeText: {
+    fontSize: 10,
     fontWeight: 'bold',
-    fontFamily: 'serif', 
-    textAlign: 'center',
-    textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: {width: -1, height: 1},
-    textShadowRadius: 10,
   },
-  paginationRow: {
+  banner: {
+    width,
+    height: 200,
+  },
+  dotsRow: {
     flexDirection: 'row',
     justifyContent: 'center',
-    marginTop: 10,
+    marginVertical: 8,
   },
   dot: {
     width: 8,
     height: 8,
+    backgroundColor: '#555',
     borderRadius: 4,
-    backgroundColor: '#444',
     marginHorizontal: 4,
   },
   activeDot: {
-    backgroundColor: '#CFB53B',
+    backgroundColor: '#E7B866',
   },
-
-  // Headers
-  sectionHeader: {
+  categoryList: {
+    paddingHorizontal: 16,
+    marginVertical: 12,
+  },
+  categoryChip: {
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#1E1E1E',
+    borderRadius: 20,
+    marginRight: 8,
+  },
+  categoryChipActive: {
+    backgroundColor: '#E7B866',
+  },
+  categoryText: {
+    color: '#AAA',
+  },
+  categoryTextActive: {
+    color: '#000',
+    fontWeight: '600',
+  },
+  productRow: {
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+  },
+  productCard: {
+    backgroundColor: '#1A1A1A',
+    width: '48%',
+    borderRadius: 12,
+    padding: 10,
+    marginBottom: 16,
+  },
+  productImage: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'contain',
+  },
+  productCategory: {
+    color: '#999',
+    fontSize: 11,
+    marginTop: 6,
+  },
+  productName: {
+    color: '#FFF',
+    fontSize: 14,
+    fontWeight: '600',
+    marginVertical: 4,
+  },
+  rating: {
+    color: '#E7B866',
+    fontSize: 12,
+  },
+  priceRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 16,
-    marginTop: 20,
-    marginBottom: 12,
+    marginTop: 6,
+  },
+  price: {
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
+  addBtn: {
+    fontSize: 20,
+    color: '#E7B866',
+  },
+  emptyText: {
+    textAlign: 'center',
+    color: '#888',
+    marginTop: 40,
   },
   sectionTitle: {
-    color: 'white',
+    color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
-    fontFamily: 'serif',
-  },
-  arrowIcon: {
-    width: 15,
-    height: 15,
-    tintColor: 'white',
-  },
-  listContainer: {
-    paddingLeft: 16,
-  },
-
-  // Services Cards
-  cardContainer: {
-    marginRight: 15,
-    width: 130,
-  },
-  serviceImage: {
-    width: 130,
-    height: 130,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-  cardTitle: {
-    color: 'white',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  cardSub: {
-    color: '#888',
-    fontSize: 11,
-    marginTop: 2,
-  },
-
-  // Experience Cards
-  experienceCardContainer: {
-    marginRight: 15,
-    width: 130,
-  },
-  experienceImage: {
-    width: 130,
-    height: 160,
-    borderRadius: 12,
-    marginBottom: 8,
-  },
-
-  // Partner Logos
-  partnerContainer: {
-    // marginRight: 10,
-    // alignItems: "flex-start",
-    // justifyContent: "flex-start",
-    backgroundColor: '#1A1A1A',
-    // padding: 10,
-    borderRadius: 10,
-    // width: 120,
-    // height: 60,
+    margin: 16,
   },
   partnerLogo: {
-    width: 160,
-    height: 150,
-    // tintColor: '#CFB53B', 
+    width: 80,
+    height: 40,
+    marginHorizontal: 12,
+    resizeMode: 'contain',
   },
-
-  // Testimonials
   testimonialCard: {
     backgroundColor: '#1E1E1E',
-    width: 280,
+    width: 260,
     borderRadius: 12,
     padding: 16,
-    marginRight: 15,
+    marginHorizontal: 8,
   },
   testimonialText: {
     color: '#DDD',
     fontSize: 13,
-    lineHeight: 18,
-    marginBottom: 15,
+    marginVertical: 8,
   },
-  testimonialUserRow: {
+  userRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -442,17 +523,15 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    marginRight: 10,
+    marginRight: 8,
   },
   userName: {
-    color: 'white',
+    color: '#FFF',
     fontSize: 13,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
-  userDetail: {
+  date: {
     color: '#888',
     fontSize: 11,
   },
 });
-
-export default Home;

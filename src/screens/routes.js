@@ -15,6 +15,8 @@ import ServicesScreen from './ServicesScreen';
 import BookingsScreen from './BookingsScreen';
 import ProfileScreen from './ProfileScreen';
 import NotificationsScreen from './NotificationsScreen';
+import ProductDetailsScreen from './ProductDetailsScreen';
+import CartScreen from './CartScreen';
 
 // Import assets utility
 import { getIcon } from '../utils/assets';
@@ -99,7 +101,34 @@ const AppNavigator = () => {
       <RootStack.Screen name="Login" component={LoginScreen} />
       <RootStack.Screen name="SignUp" component={SignUpScreen} />
       <RootStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
-      <RootStack.Screen name="MainTabs" component={MainTabs} />
+      <RootStack.Screen 
+        name="ProductDetails" 
+        component={ProductDetailsScreen} 
+        options={{
+          headerShown: false,
+          presentation: 'modal',
+          animation: 'slide_from_bottom'
+        }}
+      />
+      <RootStack.Screen 
+        name="Cart" 
+        component={CartScreen}
+        options={{
+          title: 'Shopping Cart',
+          headerStyle: {
+            backgroundColor: '#0F0F0F',
+          },
+          headerTintColor: '#FFF',
+          headerTitleStyle: {
+            fontWeight: '600',
+          },
+        }}
+      />
+      <RootStack.Screen 
+        name="MainTabs" 
+        component={MainTabs} 
+        options={{ headerShown: false }}
+      />
     </RootStack.Navigator>
   );
 };
