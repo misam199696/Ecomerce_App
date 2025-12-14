@@ -17,6 +17,8 @@ import ProfileScreen from './ProfileScreen';
 import NotificationsScreen from './NotificationsScreen';
 import ProductDetailsScreen from './ProductDetailsScreen';
 import CartScreen from './CartScreen';
+import OrderConfirmationScreen from './OrderConfirmationScreen';
+import CheckoutScreen from './CheckoutScreen';
 
 // Import assets utility
 import { getIcon } from '../utils/assets';
@@ -114,13 +116,47 @@ const AppNavigator = () => {
         name="Cart" 
         component={CartScreen}
         options={{
-          title: 'Shopping Cart',
+          title: 'My Cart',
+          headerShown: true,
           headerStyle: {
-            backgroundColor: '#0F0F0F',
+            backgroundColor: '#E7B866',
           },
-          headerTintColor: '#FFF',
+          headerTintColor: '#fff',
+        }}
+      />
+      <RootStack.Screen 
+        name="Checkout" 
+        component={CheckoutScreen} 
+        options={{
+          title: 'Checkout',
+          headerShown: true,
+          headerBackTitle: 'Back',
+          headerStyle: {
+            backgroundColor: '#fff',
+            elevation: 0,
+            shadowOpacity: 0,
+          },
+          headerTintColor: '#333',
           headerTitleStyle: {
-            fontWeight: '600',
+            color: '#333',
+          },
+        }}
+      />
+      <RootStack.Screen 
+        name="OrderConfirmation" 
+        component={OrderConfirmationScreen} 
+        options={{
+          title: 'Order Confirmation',
+          headerShown: true,
+          headerBackTitle: 'Back',
+          headerStyle: {
+            backgroundColor: '#fff',
+            elevation: 0,
+            shadowOpacity: 0,
+          },
+          headerTintColor: '#333',
+          headerTitleStyle: {
+            color: '#333',
           },
         }}
       />
