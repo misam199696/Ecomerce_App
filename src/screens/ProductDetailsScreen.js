@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,11 +8,53 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import { useCart } from '../context/CartContext';
 
 const { width } = Dimensions.get('window');
 
 export default function ProductDetailsScreen({ route, navigation }) {
   const { product } = route.params;
+  const { addToCart, cart, cartCount } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const [isInCart, setIsInCart] = useState(false);
+
+  useEffect(() => {
+    // Check if product is already in cart
+    const cartItem = cart.find(item => item.id === product.id);
+    setIsInCart(!!cartItem);
+    if (cartItem) {
+      setQuantity(cartItem.quantity);
+    }
+  }, [cart, product.id]);
+
+  const handleAddToCart = () => {
+    addToCart(product, quantity);
+  };
+
+  const incrementQuantity = () => setQuantity(prev => prev + 1);
+  const decrementQuantity = () => setQuantity(prev => Math.max(1, prev - 1));
+
+  // Set header options
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity 
+          onPress={() => navigation.navigate('Cart')}
+          style={styles.cartIconContainer}
+        >
+          <Image 
+            source={require('../assets/icons/services.png')} 
+            style={styles.cartIcon} 
+          />
+          {cartCount > 0 && (
+            <View style={styles.cartBadge}>
+              <Text style={styles.cartBadgeText}>{cartCount}</Text>
+            </View>
+          )}
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, cartCount]);
 
   return (
     <ScrollView style={styles.container}>
@@ -69,16 +111,29 @@ export default function ProductDetailsScreen({ route, navigation }) {
 
       <View style={styles.footer}>
         <View style={styles.quantityContainer}>
-          <TouchableOpacity style={styles.quantityButton}>
+          <TouchableOpacity 
+            style={styles.quantityButton}
+            onPress={decrementQuantity}
+            disabled={isInCart}
+          >
             <Text style={styles.quantityButtonText}>-</Text>
           </TouchableOpacity>
-          <Text style={styles.quantityText}>1</Text>
-          <TouchableOpacity style={styles.quantityButton}>
+          <Text style={styles.quantityText}>{quantity}</Text>
+          <TouchableOpacity 
+            style={styles.quantityButton}
+            onPress={incrementQuantity}
+            disabled={isInCart}
+          >
             <Text style={styles.quantityButtonText}>+</Text>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.addToCartButton}>
-          <Text style={styles.addToCartText}>Add to Cart</Text>
+        <TouchableOpacity 
+          style={[styles.addToCartButton, isInCart && styles.inCartButton]}
+          onPress={isInCart ? () => navigation.navigate('Cart') : handleAddToCart}
+        >
+          <Text style={styles.addToCartText}>
+            {isInCart ? 'View Cart' : 'Add to Cart'}
+          </Text>
         </TouchableOpacity>
       </View>
     </ScrollView>
@@ -86,6 +141,31 @@ export default function ProductDetailsScreen({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  cartIconContainer: {
+    marginRight: 16,
+    position: 'relative',
+  },
+  cartIcon: {
+    width: 24,
+    height: 24,
+    tintColor: '#FFF',
+  },
+  cartBadge: {
+    position: 'absolute',
+    top: -6,
+    right: -6,
+    backgroundColor: '#E7B866',
+    borderRadius: 10,
+    width: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  cartBadgeText: {
+    color: '#000',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
   container: {
     flex: 1,
     backgroundColor: '#0F0F0F',
@@ -237,12 +317,15 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   addToCartButton: {
-    flex: 1,
     backgroundColor: '#E7B866',
     borderRadius: 8,
     padding: 16,
     marginLeft: 12,
     alignItems: 'center',
+    flex: 1,
+  },
+  inCartButton: {
+    backgroundColor: '#4CAF50',
   },
   addToCartText: {
     color: '#000',

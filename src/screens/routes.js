@@ -16,6 +16,7 @@ import BookingsScreen from './BookingsScreen';
 import ProfileScreen from './ProfileScreen';
 import NotificationsScreen from './NotificationsScreen';
 import ProductDetailsScreen from './ProductDetailsScreen';
+import CartScreen from './CartScreen';
 
 // Import assets utility
 import { getIcon } from '../utils/assets';
@@ -109,7 +110,25 @@ const AppNavigator = () => {
           animation: 'slide_from_bottom'
         }}
       />
-      <RootStack.Screen name="MainTabs" component={MainTabs} />
+      <RootStack.Screen 
+        name="Cart" 
+        component={CartScreen}
+        options={{
+          title: 'Shopping Cart',
+          headerStyle: {
+            backgroundColor: '#0F0F0F',
+          },
+          headerTintColor: '#FFF',
+          headerTitleStyle: {
+            fontWeight: '600',
+          },
+        }}
+      />
+      <RootStack.Screen 
+        name="MainTabs" 
+        component={MainTabs} 
+        options={{ headerShown: false }}
+      />
     </RootStack.Navigator>
   );
 };

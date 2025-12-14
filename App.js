@@ -1,6 +1,7 @@
 import React from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar, useColorScheme } from 'react-native';
+import { CartProvider } from './src/context/CartContext';
 import Routes from './src/screens/routes';
 
 function App() {
@@ -9,7 +10,9 @@ function App() {
   return (
     <SafeAreaProvider>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <Routes />
+      <CartProvider>
+        <Routes />
+      </CartProvider>
     </SafeAreaProvider>
   );
 }
