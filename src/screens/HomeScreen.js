@@ -42,7 +42,7 @@ const PRODUCTS = [
     category: 'Laptops',
     price: 2499,
     rating: 4.8,
-    image: require('../assets/icons/guide1.png'),
+    image: require('../assets/icons/m2.png'),
   },
   {
     id: '2',
@@ -50,7 +50,7 @@ const PRODUCTS = [
     category: 'Gaming',
     price: 179,
     rating: 4.5,
-    image: require('../assets/icons/guide1.png'),
+    image: require('../assets/icons/keyboard.png'),
   },
   {
     id: '3',
@@ -58,7 +58,7 @@ const PRODUCTS = [
     category: 'Audio',
     price: 399,
     rating: 4.9,
-    image: require('../assets/icons/guide1.png'),
+    image: require('../assets/icons/headphone.png'),
   },
   {
     id: '4',
@@ -66,7 +66,7 @@ const PRODUCTS = [
     category: 'Accessories',
     price: 129,
     rating: 4.7,
-    image: require('../assets/icons/guide1.png'),
+    image: require('../assets/icons/m.png'),
   },
   {
     id: '5',
@@ -74,7 +74,7 @@ const PRODUCTS = [
     category: 'Storage',
     price: 299,
     rating: 4.6,
-    image: require('../assets/icons/guide1.png'),
+    image: require('../assets/icons/samsung.png'),
   },
   {
     id: '6',
@@ -82,7 +82,7 @@ const PRODUCTS = [
     category: 'Gaming',
     price: 1899,
     rating: 4.4,
-    image: require('../assets/icons/guide1.png'),
+    image: require('../assets/icons/asus.png'),
   },
   {
     id: '7',
@@ -90,7 +90,7 @@ const PRODUCTS = [
     category: 'Accessories',
     price: 89,
     rating: 4.3,
-    image: require('../assets/icons/guide1.png'),
+    image: require('../assets/icons/hub.png'),
   },
   {
     id: '8',
@@ -98,7 +98,7 @@ const PRODUCTS = [
     category: 'Audio',
     price: 249,
     rating: 4.8,
-    image: require('../assets/icons/guide1.png'),
+    image: require('../assets/icons/ipod.png'),
   },
 ];
 
@@ -172,10 +172,7 @@ const HomeScreen = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       {/* HEADER */}
       <View style={styles.header}>
-        <Image
-          source={require('../assets/icons/guide1.png')}
-          style={styles.logo}
-        />
+       
 
         <TextInput
           placeholder="Search products..."
@@ -185,17 +182,7 @@ const HomeScreen = ({ navigation }) => {
           onChangeText={setSearch}
         />
 
-        <TouchableOpacity style={styles.cartBtn}>
-          <Image
-            source={require('../assets/icons/guide1.png')}
-            style={styles.cartIcon}
-          />
-          {cartCount > 0 && (
-            <View style={styles.cartBadge}>
-              <Text style={styles.cartBadgeText}>{cartCount}</Text>
-            </View>
-          )}
-        </TouchableOpacity>
+      
       </View>
 
       <FlatList
@@ -298,17 +285,7 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.emptyText}>No products found</Text>
         }
         ListFooterComponent={
-          <>
-            {/* PARTNERS */}
-            <Text style={styles.sectionTitle}>Our Partners</Text>
-            <FlatList
-              data={PARTNERS}
-              horizontal
-              keyExtractor={(_, i) => i.toString()}
-              renderItem={({ item }) => (
-                <Image source={item} style={styles.partnerLogo} />
-              )}
-            />
+        <>
 
             {/* TESTIMONIALS */}
             <Text style={styles.sectionTitle}>Testimonials</Text>
